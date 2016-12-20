@@ -13,7 +13,7 @@
         android:id="@+id/ChatView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="55dp"/>
+        android:layout_marginBottom="55dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,22 +28,26 @@
             android:id="@+id/messagetext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="7dp"
+            android:layout_weight="1.02"
+            android:background="@drawable/edittext_message"
+            android:ems="10"
             android:hint="Message"
             android:inputType="textCapSentences|textMultiLine"
-            android:ems="10"
-            android:layout_weight="1.02"
-            android:layout_gravity="center"/>
+            android:paddingEnd="15dp"
+            android:paddingStart="15dp" />
 
         <Button
             android:id="@+id/messagesend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="send"
-            android:textSize="16sp"
             android:layout_gravity="center"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="5dp"
             android:background="@drawable/send_button"
-            android:layout_margin="5dp"
-            />
+            android:text="send"
+            android:textSize="14sp" />
 
     </LinearLayout>
 </FrameLayout>
