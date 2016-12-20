@@ -12,27 +12,38 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/ChatView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="55dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:layout_gravity="bottom"
         android:background="#808080"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="visible"
+        android:weightSum="1">
 
         <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="0.8"
-            android:hint="Message"
-            android:maxLines="12" />
-
-        <Button
+            android:id="@+id/messagetext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:text="send" />
+            android:hint="Message"
+            android:inputType="textCapSentences|textMultiLine"
+            android:ems="10"
+            android:layout_weight="1.02"
+            android:layout_gravity="center"/>
+
+        <Button
+            android:id="@+id/messagesend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="send"
+            android:textSize="16sp"
+            android:layout_gravity="center"
+            android:background="@drawable/send_button"
+            android:layout_margin="5dp"
+            />
 
     </LinearLayout>
 </FrameLayout>
