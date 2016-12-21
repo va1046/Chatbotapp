@@ -20,13 +20,13 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <TextView
+                android:id="@+id/text_actionbar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/text_actionbar_title"
-                android:textSize="20sp"
+                android:ellipsize="marquee"
                 android:maxLines="1"
                 android:text="ChatBot"
-                android:ellipsize="marquee"/>
+                android:textSize="20sp" />
 
         </android.support.v7.widget.Toolbar>
 
