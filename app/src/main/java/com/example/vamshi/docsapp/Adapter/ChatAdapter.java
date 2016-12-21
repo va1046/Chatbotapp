@@ -1,8 +1,11 @@
 package com.example.vamshi.docsapp.Adapter;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,21 +54,42 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.CustomViewHold
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(10, 10, 15, 10);
-            params.gravity = (Gravity.START|Gravity.CENTER_VERTICAL);
+            params.setMargins(10, 10, 20, 10);
+            params.gravity = (Gravity.START | Gravity.CENTER_VERTICAL);
             holder.mMssgBubble.setLayoutParams(params);
             holder.mMssg.setText(chatMessage.getMessage());
+
+            holder.mMssgBubble.setBubbleColor(ContextCompat.getColor(context, R.color.colorwhite));
+            holder.mMssgBubble.setStrokeColor(ContextCompat.getColor(context, R.color.colorwhite));
+            holder.mMssgBubble.setLayoutParams(params);
+            holder.mMssg.setText(chatMessage.getMessage());
+            holder.mMssg.setBackgroundColor(ContextCompat.getColor(context, R.color.colorwhite));
+            holder.mMssg.setTextColor(ContextCompat.getColor(context, R.color.colorMediumblack));
         } else {
             holder.mMssgBubble.setArrowDirection(ArrowDirection.RIGHT);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(15, 10, 10, 10);
-            params.gravity = (Gravity.END|Gravity.CENTER_VERTICAL);
+            params.setMargins(20, 10, 10, 10);
+            params.gravity = (Gravity.END | Gravity.CENTER_VERTICAL);
+            holder.mMssgBubble.setBubbleColor(fetchAccentColor());
+            holder.mMssgBubble.setStrokeColor(fetchAccentColor());
             holder.mMssgBubble.setLayoutParams(params);
             holder.mMssg.setText(chatMessage.getMessage());
+            holder.mMssg.setBackgroundColor(fetchAccentColor());
+            holder.mMssg.setTextColor(ContextCompat.getColor(context, R.color.colorwhite));
+
         }
+    }
+
+    private int fetchAccentColor() {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[]{R.attr.colorPrimary});
+        int color = a.getColor(0, 0);
+        a.recycle();
+
+        return color;
     }
 
     @Override
@@ -73,13 +97,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.CustomViewHold
         return (null != chatMessages ? chatMessages.size() : 0);
     }
 
-    public class CustomViewHolder extends RecyclerView.ViewHolder {
+    class CustomViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.message)
         TextView mMssg;
         @BindView(R.id.bubblelayout)
         BubbleLayout mMssgBubble;
 
-        public CustomViewHolder(View view) {
+        CustomViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }

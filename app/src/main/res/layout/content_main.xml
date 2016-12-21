@@ -13,41 +13,53 @@
         android:id="@+id/ChatView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="55dp" />
+        android:layout_marginBottom="55dp"
+        android:background="#dedede" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="bottom"
-        android:background="#808080"
-        android:orientation="horizontal"
-        android:visibility="visible"
-        android:weightSum="1">
+        android:orientation="vertical"
+        android:visibility="visible">
 
-        <EditText
-            android:id="@+id/messagetext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="7dp"
-            android:layout_weight="1.02"
-            android:background="@drawable/edittext_message"
-            android:ems="10"
-            android:hint="Message"
-            android:inputType="textCapSentences|textMultiLine"
-            android:paddingEnd="15dp"
-            android:paddingStart="15dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#80808080" />
 
-        <Button
-            android:id="@+id/messagesend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginEnd="5dp"
-            android:layout_marginStart="5dp"
-            android:background="@drawable/send_button"
-            android:text="send"
-            android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorwhite"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <EditText
+                android:id="@+id/messagetext"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginStart="7dp"
+                android:layout_weight="0.95"
+                android:backgroundTint="#37ffffff"
+                android:ems="10"
+                android:hint="Write a message"
+                android:inputType="textCapSentences|textMultiLine"
+                android:paddingEnd="15dp"
+                android:paddingStart="15dp" />
+
+            <ImageView
+                android:id="@+id/messagesend"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_margin="5dp"
+                android:contentDescription="Send"
+                android:scaleType="centerInside"
+                android:src="@drawable/send_button_state"
+                android:textSize="14sp" />
+        </LinearLayout>
 
     </LinearLayout>
 </FrameLayout>
