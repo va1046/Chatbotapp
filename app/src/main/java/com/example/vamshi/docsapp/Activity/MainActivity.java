@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
             for (String s : strings) {
                 addItem(true, new ChatMessage(false, s, NetworkUtil.getConnectivityStatusString(context)));
             }
+            strings.clear();
         }
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         linearLayoutManager.setStackFromEnd(true);
