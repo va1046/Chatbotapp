@@ -1,9 +1,17 @@
 package com.example.vamshi.docsapp.Activity;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +30,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.vamshi.docsapp.Adapter.ChatAdapter;
+import com.example.vamshi.docsapp.BroadcastListeners.NetworkChangeReceiver;
 import com.example.vamshi.docsapp.Model.ChatMessage;
 import com.example.vamshi.docsapp.R;
 import com.example.vamshi.docsapp.Util.NetworkUtil;
@@ -31,12 +40,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NetworkChangeReceiver.NetworkChangeInterface, TextToSpeech.OnInitListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
     public final static String PAR_KEY = "com.example.vamshi.parcelable";
@@ -44,14 +55,20 @@ public class MainActivity extends AppCompatActivity {
     RequestQueue requestQueue;
     boolean isUserMessage = false;
     Context context;
-    private ChatAdapter chatAdapter;
-
+    NetworkChangeReceiver networkChangeReceiver;
+    TextToSpeech textToSpeech;
+    boolean speak = true;
+    @BindView(R.id.cl_main)
+    CoordinatorLayout coordinatorLayout;
     @BindView(R.id.ChatView)
     RecyclerView recyclerView;
     @BindView(R.id.messagetext)
     EditText mMssgtxt;
     @BindView(R.id.messagesend)
     ImageView mButtonSend;
+    @BindView(R.id.sound_image)
+    ImageView iv_sound_image;
+    private ChatAdapter chatAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +83,41 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        networkChangeReceiver = new NetworkChangeReceiver();
+        requestQueue = Volley.newRequestQueue(this);
+        if (networkChangeReceiver != null)
+            registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         init();
         initRecyclerView();
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (networkChangeReceiver != null) {
+            unregisterReceiver(networkChangeReceiver);
+        }
+
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+        super.onDestroy();
     }
 
     private void init() {
-        requestQueue = Volley.newRequestQueue(this);
+        textToSpeech = new TextToSpeech(this, this);
         mButtonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,9 +129,38 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        iv_sound_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (speak) {
+                    speak = false;
+                    iv_sound_image.setBackground(null);
+                    iv_sound_image.setBackground(ContextCompat.getDrawable(context, R.drawable.sound_on));
+                } else {
+                    speak = true;
+                    iv_sound_image.setBackground(null);
+                    iv_sound_image.setBackground(ContextCompat.getDrawable(context, R.drawable.sound_off));
+                }
+            }
+        });
     }
 
     private void initRecyclerView() {
+        checkOfflineMessages();
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(chatAdapter);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recyclerView.scrollToPosition(chatMessages.size() - 1);
+            }
+        }, 300);
+    }
+
+    private void checkOfflineMessages() {
         chatMessages = (ArrayList<ChatMessage>) ChatMessage.listAll(ChatMessage.class);
         chatAdapter = new ChatAdapter(chatMessages, this);
 
@@ -107,21 +182,19 @@ public class MainActivity extends AppCompatActivity {
             }
             strings.clear();
         }
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(chatAdapter);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                recyclerView.scrollToPosition(chatMessages.size() - 1);
-            }
-        }, 300);
     }
+
 
     private void addItem(boolean isUsermessage, ChatMessage item) {
         if (isUsermessage) {
+
+            if (speak) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ttsGreater21(item.getMessage());
+                } else {
+                    ttsUnder20(item.getMessage());
+                }
+            }
             item.save();
             receiveMessage(item.getMessage());
             mMssgtxt.setText("");
@@ -134,6 +207,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 400);
         } else {
+
+            if (speak) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ttsGreater21(item.getMessage());
+                } else {
+                    ttsUnder20(item.getMessage());
+                }
+            }
             item.save();
             chatMessages.add(item);
             chatAdapter.notifyDataSetChanged();
@@ -146,6 +227,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("deprecation")
+    private void ttsUnder20(String text) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "MessageId");
+        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, map);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void ttsGreater21(String text) {
+        String utteranceId = this.hashCode() + "";
+        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -186,5 +279,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         requestQueue.add(stringRequest);
+    }
+
+    @Override
+    public void networkavailablelistener() {
+        initRecyclerView();
+    }
+
+    @Override
+    public void networknotavailablelistener() {
+        Snackbar.make(coordinatorLayout, "Intent not avaiable!!", Snackbar.LENGTH_LONG);
+    }
+
+    @Override
+    public void onInit(int i) {
+        if (i != TextToSpeech.ERROR) {
+            textToSpeech.setPitch(0.0f);
+            textToSpeech.setSpeechRate(0.0f);
+            textToSpeech.setLanguage(Locale.US);
+        }
     }
 }
