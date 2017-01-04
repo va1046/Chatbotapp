@@ -57,7 +57,7 @@
                 android:layout_margin="5dp"
                 android:contentDescription="Send"
                 android:scaleType="centerInside"
-                android:src="@drawable/send_button_state"
+                android:src="@drawable/send_button"
                 android:textSize="14sp" />
         </LinearLayout>
 
