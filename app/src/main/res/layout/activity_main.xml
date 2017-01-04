@@ -30,21 +30,20 @@
                     android:id="@+id/text_actionbar_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.9"
                     android:ellipsize="marquee"
                     android:maxLines="1"
                     android:text="ChatBot"
-                    android:textSize="20sp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0.9"/>
+                    android:textSize="20sp" />
 
                 <ImageView
+                    android:id="@+id/sound_image"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:background="@drawable/sound_off"
                     android:layout_gravity="end|center"
-                    android:id="@+id/sound_image"
                     android:layout_margin="5dp"
-                    />
+                    android:background="@drawable/sound_off" />
 
             </LinearLayout>
 
